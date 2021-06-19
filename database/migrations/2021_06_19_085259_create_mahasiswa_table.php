@@ -18,8 +18,7 @@ class CreateMahasiswaTable extends Migration
             $table->string('nama', 125);
             $table->string('npm', 8);
             $table->string('kelas', 5);
-            $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->timestamps();
         });
     }
 

@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class mahasiswaSeeder extends Seeder
+class MahasiswaSeeder extends Seeder
 {
 
 	public function run()
@@ -11,8 +11,7 @@ class mahasiswaSeeder extends Seeder
 			'nama' => 'Edward Evbert',
 			'npm'  => '17117369',
 			'kelas'=> '4KA20',
-			'created_at' => date('Y-m-d H:i:s'),
-			'updated_at' => date('Y-m-d H:i:s')
+			'created_at' => now()
 		]);
 	}
 }
