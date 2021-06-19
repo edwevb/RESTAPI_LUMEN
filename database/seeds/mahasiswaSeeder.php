@@ -11,7 +11,7 @@ class MahasiswaSeeder extends Seeder
 			'nama' => 'Edward Evbert',
 			'npm'  => '17117369',
 			'kelas'=> '4KA20',
-			'created_at' => now()
+			'created_at' => date('Y-m-d H:i:s')
 		]);
 	}
 }
