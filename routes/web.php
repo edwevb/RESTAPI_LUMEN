@@ -10,12 +10,18 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
+
 $router->get('/', function () use ($router) {
 	return $router->app->version();
 });
-$router->get('/mahasiswa', 'MahasiswaController@index');
-$router->post('/mahasiswa', 'MahasiswaController@store');
-$router->get('/mahasiswa/{id}', 'MahasiswaController@show');
-$router->put('/mahasiswa/{id}', 'MahasiswaController@update');
-$router->delete('/mahasiswa/{id}', 'MahasiswaController@destroy');
+
+$router->group(
+	['prefix'=>'api', ['middleware' => 'CorsMiddleware']], 
+	function () use ($router){
+	$router->get('/mahasiswa', 'MahasiswaController@index');
+	$router->post('/mahasiswa', 'MahasiswaController@store');
+	$router->get('/mahasiswa/{id}', 'MahasiswaController@show');
+	$router->put('/mahasiswa/{id}', 'MahasiswaController@update');
+	$router->delete('/mahasiswa/{id}', 'MahasiswaController@destroy');
+});
 
