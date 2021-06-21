@@ -8,4 +8,10 @@ class Mahasiswa extends Model{
 	protected $fillable = [
 		'nama', 'npm', 'kelas'
 	];
+
+	public function findMahasiswa(){
+		$mahasiswas = Mahasiswa::get();
+		if ($mahasiswas->isEmpty()) throw new \Exception('No data found');
+		return $mahasiswas;
+	}
 }

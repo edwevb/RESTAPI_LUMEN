@@ -16,7 +16,7 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(
-	['prefix'=>'api', ['middleware' => 'CorsMiddleware']], 
+	['prefix'=>'api',['middleware' => 'CorsMiddleware']],
 	function () use ($router){
 	$router->get('/mahasiswa', 'MahasiswaController@index');
 	$router->post('/mahasiswa', 'MahasiswaController@store');
