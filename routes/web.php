@@ -12,16 +12,22 @@
 */
 
 $router->get('/', function () use ($router) {
-	return $router->app->version();
+	// return $router->app->version();
+	return response()->json(['message' => 'REST API KA20']);
+});
+$router->group(['prefix' => 'api/'], function () use ($router){
+	$router->post("/register", "AuthController@register");
+	$router->post("/login", "AuthController@authenticate");
+	$router->get('/mahasiswa', 'MahasiswaController@index');
+	$router->get('/mahasiswa/{id}', 'MahasiswaController@show');
 });
 
-$router->group(
-	['prefix'=>'api',['middleware' => 'CorsMiddleware']],
+$router->group(['prefix'=>'api/', 'middleware' => 'auth'],
 	function () use ($router){
-	$router->get('/mahasiswa', 'MahasiswaController@index');
-	$router->post('/mahasiswa', 'MahasiswaController@store');
-	$router->get('/mahasiswa/{id}', 'MahasiswaController@show');
-	$router->put('/mahasiswa/{id}', 'MahasiswaController@update');
-	$router->delete('/mahasiswa/{id}', 'MahasiswaController@destroy');
-});
+		$router->post('/mahasiswa', 'MahasiswaController@store');
+		$router->put('/mahasiswa/{id}', 'MahasiswaController@update');
+		$router->delete('/mahasiswa/{id}', 'MahasiswaController@destroy');
+		// $router->get('/mahasiswa/detail', 'MahasiswaController@detail');
+		$router->post('/mahasiswa/detail/{id}', 'MahasiswaController@detailCreate');
+	});
 

@@ -52,7 +52,7 @@ class Handler extends ExceptionHandler
     {  
         if ($exception instanceof NotFoundHttpException) {
             return response()->json([
-                'error' => '404',
+                'error' => 404,
                 'message' => 'WE CAN\'T FIND PAGE YOU\'RE LOOKING FOR'
             ], 404);
         }

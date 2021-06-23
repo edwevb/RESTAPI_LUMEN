@@ -2,25 +2,28 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\MahasiswaResource;
 use App\Models\Mahasiswa;
+use App\Models\DetailMahasiswa;
 
 class MahasiswaController extends Controller
 {
     public function index()
     {
         try {
-            $mahasiswas = (new Mahasiswa())->findMahasiswa();
+            $mahasiswas = MahasiswaResource::collection(Mahasiswa::get());
+            if ($mahasiswas->isEmpty()) throw new \Exception('No data');
             return response()->json([
+                "data" => $mahasiswas,
                 'success' => true,
-                'message' =>'Mahasiswa has been fetched!',
-                'data'    => $mahasiswas
+                'message' =>'Data Mahasiswa'
             ], 200);
 
         }catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
-            ], 400);
+            ],200);
         }
     }
     
@@ -28,7 +31,9 @@ class MahasiswaController extends Controller
         $validator = Validator::make($request->all(), [
             'nama' => 'required|max:32',
             'npm' => 'required|size:8',
-            'kelas' => 'required|size:5'
+            'kelas' => 'required|size:5',
+            'jurusan' => 'required|max:64',
+            'angkatan' => 'required|size:4'
         ]);
 
         if ($validator->fails()) 
@@ -39,7 +44,13 @@ class MahasiswaController extends Controller
             ], 400);
         }else{
             try {
-                $mahasiswas = Mahasiswa::create($request->all());
+                $mahasiswas = Mahasiswa::create($request->only(
+                    'nama', 'npm', 'kelas', 'jurusan','angkatan'
+                ));
+                $mahasiswas->details()->create($request->only(
+                    'fakultas','phone','alamat','foto'
+                ));
+
                 if (!$mahasiswas) throw new \Exception('Oops! something error, please try again!');
                 return response()->json([
                     'success' => true,
@@ -58,19 +69,32 @@ class MahasiswaController extends Controller
     public function show($id)
     {
         try {
-            $mahasiswas = \DB::select(\DB::raw("SELECT * FROM mahasiswas WHERE id = '$id'"));
-            if (!$mahasiswas) throw new \Exception('No data found');
-            return response()->json([
-                'success' => true,
-                'message' => 'Detail Mahasiswa',
-                'data' => $mahasiswas
-            ], 200);
-        }catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 404);
+            $mahasiswas = Mahasiswa::where('id', $id)->first();
+            if(empty($mahasiswas)){
+                return response()->json([
+                    'success' => false,
+                    'message' => "No data"
+                ], 206);
+            } 
+            return new MahasiswaResource($mahasiswas);
+        } catch (Exception $e) {
+
         }
+
+        // try {
+        //     $mahasiswas = \DB::select(\DB::raw("SELECT * FROM mahasiswas WHERE id = '$id'"));
+        //     if (!$mahasiswas) throw new \Exception('No data found');
+        //     return response()->json([
+        //         'success' => true,
+        //         'message' => 'Detail Mahasiswa',
+        //         'data' => $mahasiswas
+        //     ], 200);
+        // }catch (\Exception $e) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => $e->getMessage()
+        //     ], 404);
+        // }
     }
 
     public function update(Request $request, $id)
@@ -78,7 +102,9 @@ class MahasiswaController extends Controller
         $validator = Validator::make($request->all(), [
             'nama' => 'required|max:32',
             'npm' => 'required|size:8',
-            'kelas' => 'required|size:5'
+            'kelas' => 'required|size:5',
+            'jurusan' => 'required|max:64',
+            'angkatan' => 'required|size:4'
         ]);
 
         if ($validator->fails()) 
@@ -120,5 +146,9 @@ class MahasiswaController extends Controller
                 'message' => $e->getMessage()
             ], 400);
         }
+    }
+
+    public function detail(Request $Request, $id){
+
     }
 }
