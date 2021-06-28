@@ -15,8 +15,7 @@ class CreateDetailmahasiswaTable extends Migration
     {
         Schema::create('detail_mahasiswas', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('fakultas', 64);
-            $table->string('phone', 12);
+            $table->string('phone', 16);
             $table->text('alamat')->nullable($value = true);
             $table->text('foto')->nullable($value = true);
             $table->integer('mahasiswa_id')->unsigned();

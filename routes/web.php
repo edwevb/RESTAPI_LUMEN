@@ -19,15 +19,13 @@ $router->group(['prefix' => 'api/'], function () use ($router){
 	$router->post("/register", "AuthController@register");
 	$router->post("/login", "AuthController@authenticate");
 	$router->get('/mahasiswa', 'MahasiswaController@index');
-	$router->get('/mahasiswa/{id}', 'MahasiswaController@show');
+	$router->get('/mahasiswa/{npm}', 'MahasiswaController@show');
 });
 
 $router->group(['prefix'=>'api/', 'middleware' => 'auth'],
 	function () use ($router){
 		$router->post('/mahasiswa', 'MahasiswaController@store');
-		$router->put('/mahasiswa/{id}', 'MahasiswaController@update');
-		$router->delete('/mahasiswa/{id}', 'MahasiswaController@destroy');
-		// $router->get('/mahasiswa/detail', 'MahasiswaController@detail');
-		$router->post('/mahasiswa/detail/{id}', 'MahasiswaController@detailCreate');
+		$router->put('/mahasiswa/{npm}', 'MahasiswaController@update');
+		$router->delete('/mahasiswa/{npm}', 'MahasiswaController@destroy');
 	});
 

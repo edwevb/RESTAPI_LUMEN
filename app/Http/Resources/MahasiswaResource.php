@@ -18,14 +18,4 @@ class MahasiswaResource extends JsonResource
 		];
 		// return parent::toArray($request);
 	}
-
-	public function with($request)
-	{
-		return [
-			// 'created' => $this->created_at->diffForHumans(),
-			'status'  => true,
-			'message' => 'Detail Mahasiswa'
-		];
-	}
-
 }

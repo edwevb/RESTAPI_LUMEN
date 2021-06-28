@@ -15,11 +15,6 @@ class Mahasiswa extends Model {
 		return $this->hasOne('App\Models\DetailMahasiswa');
 	}
 
-
-	public function getPhoneAttribute(){
-		return $this->details->phone;
-	}
-
 	public function getMahasiswa(){
 		// $mahasiswas = Mahasiswa::with(['details' => function($query) {
 		// 	return $query->select(['mahasiswa_id','phone','alamat','foto']);

@@ -30,10 +30,11 @@ class MahasiswaController extends Controller
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
             'nama' => 'required|max:32',
-            'npm' => 'required|size:8',
+            'npm' => 'required|unique:mahasiswas|size:8',
             'kelas' => 'required|size:5',
             'jurusan' => 'required|max:64',
-            'angkatan' => 'required|size:4'
+            'angkatan' => 'required|size:4',
+            'phone' => 'required|max:16'
         ]);
 
         if ($validator->fails()) 
@@ -44,18 +45,13 @@ class MahasiswaController extends Controller
             ], 400);
         }else{
             try {
-                $mahasiswas = Mahasiswa::create($request->only(
-                    'nama', 'npm', 'kelas', 'jurusan','angkatan'
-                ));
-                $mahasiswas->details()->create($request->only(
-                    'fakultas','phone','alamat','foto'
-                ));
+                $mahasiswas = Mahasiswa::create($request->all());
+                $mahasiswas->details()->create($request->all());
 
                 if (!$mahasiswas) throw new \Exception('Oops! something error, please try again!');
                 return response()->json([
                     'success' => true,
-                    'message' => 'Data has been created!',
-                    'data' => $mahasiswas
+                    'message' => 'Data has been created!'
                 ], 200);
             } catch (\Exception $e) {
                 return response()->json([
@@ -66,45 +62,33 @@ class MahasiswaController extends Controller
         }
     }
 
-    public function show($id)
+    public function show($npm)
     {
-        try {
-            $mahasiswas = Mahasiswa::where('id', $id)->first();
-            if(empty($mahasiswas)){
-                return response()->json([
-                    'success' => false,
-                    'message' => "No data"
-                ], 206);
-            } 
-            return new MahasiswaResource($mahasiswas);
-        } catch (Exception $e) {
-
+        $mahasiswas = Mahasiswa::where('npm', $npm)->first();
+        if(empty($mahasiswas)){
+            return response()->json([
+                'success' => false,
+                'message' => "No data"
+            ], 206);
         }
-
-        // try {
-        //     $mahasiswas = \DB::select(\DB::raw("SELECT * FROM mahasiswas WHERE id = '$id'"));
-        //     if (!$mahasiswas) throw new \Exception('No data found');
-        //     return response()->json([
-        //         'success' => true,
-        //         'message' => 'Detail Mahasiswa',
-        //         'data' => $mahasiswas
-        //     ], 200);
-        // }catch (\Exception $e) {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => $e->getMessage()
-        //     ], 404);
-        // }
+        $data = new MahasiswaResource($mahasiswas);
+        return response()->json([
+            'data' => $data,
+            'success' => false,
+            'message' => "No data"
+        ]);
+        
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $npm)
     {
         $validator = Validator::make($request->all(), [
             'nama' => 'required|max:32',
-            'npm' => 'required|size:8',
+            'npm' => 'required|size:8|exists:mahasiswas,npm',
             'kelas' => 'required|size:5',
             'jurusan' => 'required|max:64',
-            'angkatan' => 'required|size:4'
+            'angkatan' => 'required|size:4',
+            'phone' => 'required|max:16'
         ]);
 
         if ($validator->fails()) 
@@ -115,12 +99,28 @@ class MahasiswaController extends Controller
             ], 400);
         }else{
             try {
-                $mahasiswas = Mahasiswa::where('id', $id)->update($request->all());
-                if (!$mahasiswas) throw new \Exception('Oops! something error, please try again!');
+                $mahasiswas = Mahasiswa::where('npm', $npm)->first();
+                $mahasiswas->update([
+                 'nama' => $request->nama,
+                 'npm' => $request->npm,
+                 'kelas' => $request->kelas,
+                 'jurusan' => $request->jurusan,
+                 'angkatan' => $request->angkatan
+             ]);
+
+                $details = $mahasiswas->details();
+                $details->update([
+                    'phone' => $request->phone,
+                    'alamat' => $request->alamat,
+                    'foto' => $request->foto,
+                    'mahasiswa_id' => $mahasiswas->id
+                ]);
+
+                if (!$mahasiswas && !details) throw new \Exception('Oops! something error, please try again!');
+
                 return response()->json([
                     'success' => true,
-                    'message' => 'Data has been updated!',
-                    'data' => $mahasiswas
+                    'message' => 'Data has been updated!'
                 ], 200);
 
             } catch (\Exception $e) {
@@ -132,10 +132,10 @@ class MahasiswaController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy($npm)
     {
         try {
-            Mahasiswa::where('id', $id)->delete();
+            Mahasiswa::where('npm', $npm)->first()->delete();
             return response()->json([
                 'success' => true,
                 'message' => "Data successfully deleted!"
@@ -146,9 +146,5 @@ class MahasiswaController extends Controller
                 'message' => $e->getMessage()
             ], 400);
         }
-    }
-
-    public function detail(Request $Request, $id){
-
     }
 }
